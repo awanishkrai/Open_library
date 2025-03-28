@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Library - Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #2563eb;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .search-box {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 10px;
+        }
+
+        .book-card {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+            background: #2563eb;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    
+    <div class="navbar">
+        <a href="index.html">Open Library</a>
+        <div>
+            <a id="loginLink" href="login.html">Login</a>
+            <a id="registerLink" href="register.html">Register</a>
+            <a id="logoutLink" href="#" onclick="logout()" class="hidden">Logout</a>
+        </div>
+    </div>
+
+    
+    <div class="container">
+        <h1>Welcome to Open Library</h1>
+        <p class="text-center">Explore a vast collection of books</p>
+        <input id="search" type="text" placeholder="Search books..." class="search-box" onkeyup="searchBooks()">
+    </div>
+
+    
+    <div class="container">
+        <h2>Available Books</h2>
+        <div id="booksList" class="book-grid">
+            <p class="text-center">Loading books...</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 Open Library. All rights reserved.</p>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            checkLogin();
+            loadBooks();
+        });
+
+        function checkLogin() {
+            const username = localStorage.getItem("username");
+            if (username) {
+                document.getElementById("loginLink").classList.add("hidden");
+                document.getElementById("registerLink").classList.add("hidden");
+                document.getElementById("logoutLink").classList.remove("hidden");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("username");
+            window.location.href = "login.html";
+        }
+
+        function loadBooks() {
+            fetch("http://localhost/new%20proj/open%20library/backend/api/books.php")
+                .then(response => response.json())
+                .then(data => {
+                    const booksList = document.getElementById("booksList");
+                    booksList.innerHTML = ""; // Clear previous content
+
+                    if (data.length === 0) {
+                        booksList.innerHTML = `<p class="text-center">No books available.</p>`;
+                        return;
+                    }
+
+                    data.forEach(book => {
+                        const bookCard = `
+                            <div class="book-card">
+                                <h3>${book.title}</h3>
+                                <p><strong>Author:</strong> ${book.author}</p>
+                                <p><strong>Year:</strong> ${book.year}</p>
+                            </div>
+                        `;
+                        booksList.innerHTML += bookCard;
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching books:", error);
+                    document.getElementById("booksList").innerHTML = `<p class="text-center">Failed to load books.</p>`;
+                });
+        }
+
+        function searchBooks() {
+            let input = document.getElementById("search").value.toLowerCase();
+            let books = document.querySelectorAll(".book-card");
+
+            books.forEach(book => {
+                let title = book.querySelector("h3").textContent.toLowerCase();
+                book.style.display = title.includes(input) ? "block" : "none";
+            });
+        }
+    </script>
+
+</body>
+</html>

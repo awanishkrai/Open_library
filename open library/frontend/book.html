@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Library</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Library Books</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Year</th>
+                </tr>
+            </thead>
+            <tbody id="book-list">
+                <tr>
+                    <td colspan="4" class="loading">Loading books...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("http://localhost/new%20proj/open%20library/backend/api/books.php") 
+                .then(response => response.json())
+                .then(data => {
+                    const bookList = document.getElementById("book-list");
+                    bookList.innerHTML = ""; 
+
+                    if (data.length === 0) {
+                        bookList.innerHTML = `<tr><td colspan="4" class="loading">No books available</td></tr>`;
+                        return;
+                    }
+
+                    data.forEach(book => {
+                        const row = `
+                            <tr>
+                                <td>${book.id}</td>
+                                <td>${book.title}</td>
+                                <td>${book.author}</td>
+                                <td>${book.year}</td>
+                            </tr>
+                        `;
+                        bookList.innerHTML += row;
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching books:", error);
+                    document.getElementById("book-list").innerHTML = `<tr><td colspan="4" class="loading">Failed to load data</td></tr>`;
+                });
+        });
+    </script>
+
+</body>
+
+</html>
