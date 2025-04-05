@@ -7,10 +7,14 @@ include "../db.php";
 $sql = "SELECT * FROM books";
 $result = $conn->query($sql);
 
-$books = [];
-while ($row = $result->fetch_assoc()) {
-    $books[] = $row;
+if ($result === false) {
+    echo json_encode(["error" => $conn->error]);
+    exit;
 }
 
+$books = $result->fetch_all(MYSQLI_ASSOC);
+
 echo json_encode($books);
+
+$conn->close();
 ?>

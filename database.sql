@@ -1,19 +1,20 @@
 USE open_library;
 
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL
-);
+-- Drop the existing books table if it exists
+DROP TABLE IF EXISTS books;
 
+-- Create a new books table with image_path before pdf_path
 CREATE TABLE books (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     author VARCHAR(255) NOT NULL,
-    year INT NOT NULL
+    year INT NOT NULL,
+    image_path VARCHAR(255),   -- 🖼️ Book cover image path
+    pdf_path VARCHAR(255)      -- 📄 PDF file path
 );
 
-INSERT INTO books (title, author, year) VALUES
-('1984', 'George Orwell', 1949),
-('To Kill a Mockingbird', 'Harper Lee', 1960),
-('The Great Gatsby', 'F. Scott Fitzgerald', 1925);
+-- Insert sample data (image_path and pdf_path are left NULL for now)
+INSERT INTO books (title, author, year, image_path, pdf_path) VALUES
+('1984', 'George Orwell', 1949, NULL, NULL),
+('To Kill a Mockingbird', 'Harper Lee', 1960, NULL, NULL),
+('The Great Gatsby', 'F. Scott Fitzgerald', 1925, NULL, NULL);

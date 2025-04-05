@@ -17,7 +17,28 @@
         <button onclick="register()" class="w-full bg-green-500 text-white p-2 rounded">Register</button>
         <p class="mt-2 text-center">Already have an account? <a href="login.html" class="text-blue-500">Login</a></p>
     </div>
-    <script src="js/main.js"></script>
+    <script>
+        function register() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            fetch("http://localhost/new%20proj/open%20library/backend/auth/register.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Registration successful! You can now log in.");
+                        window.location.href = "login.html";
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        }
+    </script>
 </body>
 
 </html>

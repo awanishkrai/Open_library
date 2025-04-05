@@ -2,9 +2,9 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open Library - Home</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adhyay- Home</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,6 +19,7 @@
             padding: 15px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
         .navbar a {
@@ -29,7 +30,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: auto;
             padding: 20px;
             background: white;
@@ -38,7 +39,8 @@
             margin-top: 20px;
         }
 
-        h1, h2 {
+        h1,
+        h2 {
             text-align: center;
             color: #333;
         }
@@ -54,7 +56,7 @@
 
         .book-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 15px;
             padding: 10px;
         }
@@ -65,6 +67,33 @@
             border-radius: 5px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
             text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .book-card:hover {
+            transform: scale(1.02);
+        }
+
+        .book-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .read-btn {
+            display: inline-block;
+            margin-top: 10px;
+            background: #2563eb;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+
+        .read-btn:hover {
+            background: #1e40af;
         }
 
         .footer {
@@ -78,29 +107,34 @@
         .hidden {
             display: none;
         }
+
+        .text-center {
+            text-align: center;
+        }
     </style>
 </head>
 
 <body>
 
-    
+    <!-- Navigation bar -->
     <div class="navbar">
-        <a href="index.html">Open Library</a>
+        <a href="index.html">📚 Adhyay</a>
         <div>
+            <span id="userWelcome" class="hidden" style="margin-right: 10px;"></span>
             <a id="loginLink" href="login.html">Login</a>
             <a id="registerLink" href="register.html">Register</a>
             <a id="logoutLink" href="#" onclick="logout()" class="hidden">Logout</a>
         </div>
     </div>
 
-    
+    <!-- Welcome and Search -->
     <div class="container">
         <h1>Welcome to Open Library</h1>
         <p class="text-center">Explore a vast collection of books</p>
-        <input id="search" type="text" placeholder="Search books..." class="search-box" onkeyup="searchBooks()">
+        <input id="search" type="text" placeholder="Search books..." class="search-box" onkeyup="searchBooks()" />
     </div>
 
-    
+    <!-- Book List Section -->
     <div class="container">
         <h2>Available Books</h2>
         <div id="booksList" class="book-grid">
@@ -108,27 +142,46 @@
         </div>
     </div>
 
+    <!-- Footer -->
     <div class="footer">
         <p>&copy; 2025 Open Library. All rights reserved.</p>
     </div>
 
+    <!-- JavaScript -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             checkLogin();
             loadBooks();
+
+            // Auto-reload every 50 seconds
+            setInterval(() => {
+                window.location.reload();
+            }, 50000);
         });
 
         function checkLogin() {
-            const username = localStorage.getItem("username");
-            if (username) {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const welcomeEl = document.getElementById("userWelcome");
+
+            if (user && user.username) {
+                welcomeEl.textContent = `👋 Hello, ${user.username}`;
+                welcomeEl.classList.remove("hidden");
+
                 document.getElementById("loginLink").classList.add("hidden");
                 document.getElementById("registerLink").classList.add("hidden");
                 document.getElementById("logoutLink").classList.remove("hidden");
+            } else {
+                welcomeEl.textContent = "";
+                welcomeEl.classList.add("hidden");
+
+                document.getElementById("loginLink").classList.remove("hidden");
+                document.getElementById("registerLink").classList.remove("hidden");
+                document.getElementById("logoutLink").classList.add("hidden");
             }
         }
 
         function logout() {
-            localStorage.removeItem("username");
+            localStorage.removeItem("user");
             window.location.href = "login.html";
         }
 
@@ -137,9 +190,9 @@
                 .then(response => response.json())
                 .then(data => {
                     const booksList = document.getElementById("booksList");
-                    booksList.innerHTML = ""; // Clear previous content
+                    booksList.innerHTML = "";
 
-                    if (data.length === 0) {
+                    if (!Array.isArray(data) || data.length === 0) {
                         booksList.innerHTML = `<p class="text-center">No books available.</p>`;
                         return;
                     }
@@ -147,9 +200,14 @@
                     data.forEach(book => {
                         const bookCard = `
                             <div class="book-card">
+                                <img src="http://localhost/new%20proj/open%20library/${book.image_path}" 
+                                     alt="${book.title} Cover"
+                                     onerror="this.src='http://localhost/new%20proj/open%20library/frontend/falback.jpg'" />
                                 <h3>${book.title}</h3>
                                 <p><strong>Author:</strong> ${book.author}</p>
                                 <p><strong>Year:</strong> ${book.year}</p>
+                                <a class="read-btn" href="http://localhost/new%20proj/open%20library/${book.pdf_path}" target="_blank">Read PDF</a>
+                                ${isLoggedIn() ? `<button class="read-btn" onclick="addToReadlist(${book.id})">+ Add to Readlist</button>` : ''}
                             </div>
                         `;
                         booksList.innerHTML += bookCard;
@@ -161,6 +219,11 @@
                 });
         }
 
+        function isLoggedIn() {
+            const user = JSON.parse(localStorage.getItem("user"));
+            return user && user.username;
+        }
+
         function searchBooks() {
             let input = document.getElementById("search").value.toLowerCase();
             let books = document.querySelectorAll(".book-card");
@@ -170,7 +233,40 @@
                 book.style.display = title.includes(input) ? "block" : "none";
             });
         }
-    </script>
 
+        function addToReadlist(bookId) {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const username = user?.username;
+
+            if (!username) {
+                alert("Please log in to add books to your readlist.");
+                return;
+            }
+
+            fetch("http://localhost/new%20proj/open%20library/backend/api/readlist.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: username,
+                    book_id: bookId
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Book added to your readlist!");
+                    } else {
+                        alert("Error: " + (data.error || "Something went wrong."));
+                    }
+                })
+                .catch(error => {
+                    console.error("Error adding to readlist:", error);
+                    alert("Failed to add book to readlist.");
+                });
+        }
+    </script>
 </body>
+
 </html>

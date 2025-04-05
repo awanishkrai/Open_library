@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Upload a Book</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #9E9E9E;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <form id="bookForm">
+        <h2>Upload Book</h2>
+        <input type="text" name="title" placeholder="Book Title" required>
+        <input type="text" name="author" placeholder="Author" required>
+        <input type="number" name="year" placeholder="Year" required>
+        <label>Cover Image:</label>
+        <input type="file" name="image" accept="image/*" required>
+        <label>PDF File:</label>
+        <input type="file" name="pdf" accept="application/pdf" required>
+        <button type="submit">Submit</button>
+        <div class="message" id="message"></div>
+    </form>
+
+    <script>
+        const form = document.getElementById("bookForm");
+        const messageBox = document.getElementById("message");
+        const submitButton = form.querySelector("button");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const imageFile = form.image.files[0];
+            const pdfFile = form.pdf.files[0];
+
+            if (!imageFile || !pdfFile) {
+                messageBox.style.color = "red";
+                messageBox.textContent = "❌ Please select both files.";
+                return;
+            }
+
+            if (!imageFile.type.startsWith("image/")) {
+                messageBox.style.color = "red";
+                messageBox.textContent = "❌ Cover image must be a valid image file.";
+                return;
+            }
+
+            if (pdfFile.type !== "application/pdf") {
+                messageBox.style.color = "red";
+                messageBox.textContent = "❌ PDF file must be a valid PDF.";
+                return;
+            }
+
+            const formData = new FormData(form);
+
+            submitButton.disabled = true;
+            messageBox.style.color = "blue";
+            messageBox.textContent = "⏳ Uploading...";
+
+            try {
+                const response = await fetch("http://localhost/new%20proj/open%20library/backend/api/add_book.php", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    messageBox.style.color = "green";
+                    messageBox.textContent = "✅ " + result.message;
+                    form.reset();
+                } else {
+                    messageBox.style.color = "red";
+                    messageBox.textContent = "❌ " + (result.error || "Something went wrong");
+                }
+            } catch (err) {
+                messageBox.style.color = "red";
+                messageBox.textContent = "❌ Network error or server not reachable";
+                console.error(err);
+            } finally {
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+
+</body>
+
+</html>

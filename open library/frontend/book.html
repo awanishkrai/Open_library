@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Open Library</title>
     <style>
         body {
@@ -13,7 +13,7 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 900px;
             margin: auto;
             background: white;
             padding: 20px;
@@ -44,9 +44,24 @@
             background-color: #f4f4f4;
         }
 
+        img {
+            width: 50px;
+            height: auto;
+            border-radius: 4px;
+        }
+
         .loading {
             text-align: center;
             padding: 10px;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -59,14 +74,16 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Cover</th>
                     <th>Title</th>
                     <th>Author</th>
                     <th>Year</th>
+                    <th>PDF</th>
                 </tr>
             </thead>
             <tbody id="book-list">
                 <tr>
-                    <td colspan="4" class="loading">Loading books...</td>
+                    <td colspan="6" class="loading">Loading books...</td>
                 </tr>
             </tbody>
         </table>
@@ -74,32 +91,34 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("http://localhost/new%20proj/open%20library/backend/api/books.php") 
+            fetch("http://localhost/new%20proj/open%20library/backend/api/books.php")
                 .then(response => response.json())
                 .then(data => {
                     const bookList = document.getElementById("book-list");
-                    bookList.innerHTML = ""; 
+                    bookList.innerHTML = "";
 
                     if (data.length === 0) {
-                        bookList.innerHTML = `<tr><td colspan="4" class="loading">No books available</td></tr>`;
+                        bookList.innerHTML = `<tr><td colspan="6" class="loading">No books available</td></tr>`;
                         return;
                     }
 
                     data.forEach(book => {
                         const row = `
-                            <tr>
-                                <td>${book.id}</td>
-                                <td>${book.title}</td>
-                                <td>${book.author}</td>
-                                <td>${book.year}</td>
-                            </tr>
-                        `;
+              <tr>
+                <td>${book.id}</td>
+                <td><img src="http://localhost/new%20proj/open%20library/${book.image_path}" alt="Cover" /></td>
+                <td>${book.title}</td>
+                <td>${book.author}</td>
+                <td>${book.year}</td>
+                <td><a href="http://localhost/new%20proj/open%20library/${book.pdf_path}" target="_blank">Read</a></td>
+              </tr>
+            `;
                         bookList.innerHTML += row;
                     });
                 })
                 .catch(error => {
                     console.error("Error fetching books:", error);
-                    document.getElementById("book-list").innerHTML = `<tr><td colspan="4" class="loading">Failed to load data</td></tr>`;
+                    document.getElementById("book-list").innerHTML = `<tr><td colspan="6" class="loading">Failed to load data</td></tr>`;
                 });
         });
     </script>

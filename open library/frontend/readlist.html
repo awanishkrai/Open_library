@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Readlist - Open Library</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+    <!-- Navbar -->
+    <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold">📚 Open Library</h1>
+        <div>
+            <span id="userGreeting" class="mr-4"></span>
+            <button onclick="logout()"
+                class="bg-white text-blue-600 px-3 py-1 rounded hover:bg-gray-100">Logout</button>
+        </div>
+    </div>
+
+    <!-- Container -->
+    <div class="max-w-4xl mx-auto mt-6 p-4 bg-white rounded shadow">
+        <h2 class="text-2xl font-semibold text-center mb-4">Your Reading List</h2>
+        <div id="readlistContainer" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <!-- Book cards will go here -->
+        </div>
+        <p id="emptyMessage" class="text-center text-gray-500 mt-4 hidden">No books in your reading list.</p>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        const username = user?.username;
+
+        if (!username) {
+            alert("Please login first.");
+            window.location.href = "login.html";
+        }
+
+        document.getElementById("userGreeting").textContent = `Hi, ${username}`;
+
+        function logout() {
+            localStorage.removeItem("user");
+            window.location.href = "login.html";
+        }
+
+        function fetchReadlist() {
+            fetch(`http://localhost/new%20proj/open%20library/backend/api/readlist.php?username=${username}`)
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById("readlistContainer");
+                    container.innerHTML = "";
+                    if (!data.readlist || data.readlist.length === 0) {
+                        document.getElementById("emptyMessage").classList.remove("hidden");
+                        return;
+                    }
+
+                    data.readlist.forEach(item => {
+                        const card = document.createElement("div");
+                        card.className = "bg-gray-50 p-4 rounded shadow hover:shadow-md transition";
+                        card.innerHTML = `
+              <img src="http://localhost/new%20proj/open%20library/${item.image_path}" 
+                   alt="${item.title}" 
+                   class="w-full h-40 object-cover rounded mb-2">
+              <h3 class="text-lg font-bold">${item.title}</h3>
+              <p><strong>Author:</strong> ${item.author}</p>
+              <p><strong>Status:</strong> ${item.status}</p>
+              <p class="text-sm text-gray-600">${item.notes || ""}</p>
+              <a href="http://localhost/new%20proj/open%20library/${item.pdf_path}" target="_blank"
+                 class="inline-block mt-2 text-blue-600 hover:underline">Read PDF</a>
+              <button onclick="removeFromReadlist(${item.readlist_id})"
+                      class="block mt-2 text-red-600 hover:underline text-sm">Remove</button>
+            `;
+                        container.appendChild(card);
+                    });
+                })
+                .catch(err => {
+                    console.error("Failed to load readlist", err);
+                });
+        }
+
+        function removeFromReadlist(readlist_id) {
+            if (!confirm("Are you sure you want to remove this book?")) return;
+
+            fetch("http://localhost/new%20proj/open%20library/backend/api/readlist.php", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ readlist_id })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        fetchReadlist();
+                    } else {
+                        alert("Failed to delete: " + (data.error || ""));
+                    }
+                })
+                .catch(err => {
+                    console.error("Error deleting item", err);
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchReadlist);
+    </script>
+</body>
+
+</html>
