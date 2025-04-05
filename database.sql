@@ -18,3 +18,11 @@ INSERT INTO books (title, author, year, image_path, pdf_path) VALUES
 ('1984', 'George Orwell', 1949, NULL, NULL),
 ('To Kill a Mockingbird', 'Harper Lee', 1960, NULL, NULL),
 ('The Great Gatsby', 'F. Scott Fitzgerald', 1925, NULL, NULL);
+
+CREATE TABLE discussions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id INT NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    comment TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

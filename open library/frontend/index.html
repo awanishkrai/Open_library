@@ -184,6 +184,9 @@
             localStorage.removeItem("user");
             window.location.href = "login.html";
         }
+    function redirectToDetails(bookId) {
+        window.location.href = `book.html?id=${bookId}`;
+    }
 
         function loadBooks() {
             fetch("http://localhost/new%20proj/open%20library/backend/api/books.php")
@@ -199,17 +202,17 @@
 
                     data.forEach(book => {
                         const bookCard = `
-                            <div class="book-card">
-                                <img src="http://localhost/new%20proj/open%20library/${book.image_path}" 
-                                     alt="${book.title} Cover"
-                                     onerror="this.src='http://localhost/new%20proj/open%20library/frontend/falback.jpg'" />
-                                <h3>${book.title}</h3>
-                                <p><strong>Author:</strong> ${book.author}</p>
-                                <p><strong>Year:</strong> ${book.year}</p>
-                                <a class="read-btn" href="http://localhost/new%20proj/open%20library/${book.pdf_path}" target="_blank">Read PDF</a>
-                                ${isLoggedIn() ? `<button class="read-btn" onclick="addToReadlist(${book.id})">+ Add to Readlist</button>` : ''}
-                            </div>
-                        `;
+    <div class="book-card" onclick="redirectToDetails(${book.id})" style="cursor: pointer;">
+        <img src="http://localhost/new%20proj/open%20library/${book.image_path}" 
+             alt="${book.title} Cover"
+             onerror="this.src='http://localhost/new%20proj/open%20library/frontend/falback.jpg'" />
+        <h3>${book.title}</h3>
+        <p><strong>Author:</strong> ${book.author}</p>
+        <p><strong>Year:</strong> ${book.year}</p>
+        ${isLoggedIn() ? `<button class="read-btn" onclick="event.stopPropagation(); addToReadlist(${book.id})">+ Add to Readlist</button>` : ''}
+    </div>
+`;
+
                         booksList.innerHTML += bookCard;
                     });
                 })

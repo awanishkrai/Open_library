@@ -4,125 +4,211 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Open Library</title>
+    <title>Book Details - Adhyay</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f3f4f6;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 800px;
             margin: auto;
-            background: white;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: white;
+            margin-top: 30px;
             border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
         }
 
-        h1 {
+        h1,
+        h2 {
             text-align: center;
-            margin-bottom: 20px;
-            color: #333;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f4f4f4;
-        }
-
-        img {
-            width: 50px;
-            height: auto;
+        .book-details img {
+            max-width: 200px;
+            display: block;
+            margin: 0 auto;
             border-radius: 4px;
         }
 
-        .loading {
-            text-align: center;
+        .comments-section {
+            margin-top: 30px;
+        }
+
+        .comment {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
             padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
         }
 
-        a {
-            color: #007bff;
-            text-decoration: none;
+        .comment strong {
+            color: #2563eb;
         }
 
-        a:hover {
-            text-decoration: underline;
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 
 <body>
-
     <div class="container">
-        <h1>Library Books</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Cover</th>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>Year</th>
-                    <th>PDF</th>
-                </tr>
-            </thead>
-            <tbody id="book-list">
-                <tr>
-                    <td colspan="6" class="loading">Loading books...</td>
-                </tr>
-            </tbody>
-        </table>
+        <div id="bookInfo" class="book-details">
+            <p class="text-center">Loading book details...</p>
+        </div>
+
+        <div class="comments-section">
+            <h2>📚 Discussion</h2>
+            <div id="comments"></div>
+
+            <div id="commentFormContainer" class="hidden">
+                <textarea id="commentText" placeholder="Share your thoughts..."></textarea>
+                <button onclick="submitComment()">Post Comment</button>
+            </div>
+
+            <p id="loginPrompt" class="text-center hidden">
+                🔒 Please <a href="login.html">log in</a> to post a comment.
+            </p>
+        </div>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            fetch("http://localhost/new%20proj/open%20library/backend/api/books.php")
-                .then(response => response.json())
-                .then(data => {
-                    const bookList = document.getElementById("book-list");
-                    bookList.innerHTML = "";
+        const params = new URLSearchParams(window.location.search);
+        const bookId = params.get("id");
 
-                    if (data.length === 0) {
-                        bookList.innerHTML = `<tr><td colspan="6" class="loading">No books available</td></tr>`;
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchBookDetails();
+            loadComments();
+            checkLoginStatus();
+            setInterval(loadComments, 20000); // Auto-refresh comments
+        });
+
+        function checkLoginStatus() {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (user && user.username) {
+                document.getElementById("commentFormContainer").classList.remove("hidden");
+                document.getElementById("loginPrompt").classList.add("hidden");
+            } else {
+                document.getElementById("commentFormContainer").classList.add("hidden");
+                document.getElementById("loginPrompt").classList.remove("hidden");
+            }
+        }
+
+        function fetchBookDetails() {
+            fetch(`http://localhost/new%20proj/open%20library/backend/api/book_details.php?id=${bookId}`)
+                .then(res => res.json())
+                .then(book => {
+                    const html = `
+            <img src="http://localhost/new%20proj/open%20library/${book.image_path}" alt="${book.title}" onerror="this.src='fallback.jpg'" />
+            <h1>${book.title}</h1>
+            <p><strong>Author:</strong> ${book.author}</p>
+            <p><strong>Year:</strong> ${book.year}</p>
+            <p><strong>Description:</strong> ${book.description || "No description available."}</p>
+          `;
+                    document.getElementById("bookInfo").innerHTML = html;
+                })
+                .catch(err => {
+                    document.getElementById("bookInfo").innerHTML = "<p class='text-center'>Failed to load book details.</p>";
+                    console.error(err);
+                });
+        }
+
+        function loadComments() {
+            fetch(`http://localhost/new%20proj/open%20library/backend/api/discussion.php?book_id=${bookId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById("comments");
+                    if (!Array.isArray(data) || data.length === 0) {
+                        container.innerHTML = "<p class='text-center'>No comments yet.</p>";
                         return;
                     }
 
-                    data.forEach(book => {
-                        const row = `
-              <tr>
-                <td>${book.id}</td>
-                <td><img src="http://localhost/new%20proj/open%20library/${book.image_path}" alt="Cover" /></td>
-                <td>${book.title}</td>
-                <td>${book.author}</td>
-                <td>${book.year}</td>
-                <td><a href="http://localhost/new%20proj/open%20library/${book.pdf_path}" target="_blank">Read</a></td>
-              </tr>
-            `;
-                        bookList.innerHTML += row;
-                    });
+                    container.innerHTML = data.map(comment => `
+            <div class="comment">
+              <strong>${comment.username}</strong> 
+              <small>(${new Date(comment.created_at).toLocaleString()})</small>
+              <p>${comment.comment}</p>
+            </div>
+          `).join("");
                 })
-                .catch(error => {
-                    console.error("Error fetching books:", error);
-                    document.getElementById("book-list").innerHTML = `<tr><td colspan="6" class="loading">Failed to load data</td></tr>`;
+                .catch(err => {
+                    document.getElementById("comments").innerHTML = "<p class='text-center'>Failed to load comments.</p>";
+                    console.error(err);
                 });
-        });
-    </script>
+        }
 
+        function submitComment() {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const text = document.getElementById("commentText").value.trim();
+
+            if (!user || !user.username) {
+                alert("You must be logged in to comment.");
+                return;
+            }
+
+            if (!text) {
+                alert("Please write something before posting!");
+                return;
+            }
+
+            fetch("http://localhost/new%20proj/open%20library/backend/api/discussion.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: user.username,
+                    book_id: bookId,
+                    comment: text // ✅ Fixed: must be `comment` not `text`
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("commentText").value = "";
+                        loadComments();
+                    } else {
+                        alert("Error: " + (data.error || "Could not post comment."));
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Failed to post comment.");
+                });
+        }
+    </script>
 </body>
 
 </html>
