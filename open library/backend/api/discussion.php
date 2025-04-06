@@ -54,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         !isset($data["comment"])
     ) {
         http_response_code(400);
-        echo json_encode(["success" => false, "error" => "Missing data 1."]);
+        echo json_encode(["success" => false, "error" => "Missing data ."]);
         exit();
     }
 

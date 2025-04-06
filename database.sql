@@ -26,3 +26,43 @@ CREATE TABLE discussions (
     comment TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE ratings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id INT NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    UNIQUE (book_id, username)
+);
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+);
+CREATE TABLE club_members (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    club_id INT NOT NULL,
+    user_id INT NOT NULL,
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(club_id, user_id), -- Prevent duplicate entries
+    FOREIGN KEY (club_id) REFERENCES book_clubs(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+CREATE TABLE club_discussions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    club_id INT NOT NULL,
+    book_id VARCHAR(100) NOT NULL,  -- Open Library ID
+    title VARCHAR(255) NOT NULL,
+    started_by INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (club_id) REFERENCES book_clubs(id),
+    FOREIGN KEY (started_by) REFERENCES users(id)
+);
+CREATE TABLE comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    discussion_id INT NOT NULL,
+    user_id INT NOT NULL,
+    comment TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (discussion_id) REFERENCES discussions(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);

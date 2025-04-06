@@ -88,6 +88,18 @@
         <div id="bookInfo" class="book-details">
             <p class="text-center">Loading book details...</p>
         </div>
+        <div class="rating-section">
+            <h4>Rate this book:</h4>
+            <select id="ratingInput" onchange="submitRating()">
+                <option value="">Rate</option>
+                <option value="1">⭐</option>
+                <option value="2">⭐⭐</option>
+                <option value="3">⭐⭐⭐</option>
+                <option value="4">⭐⭐⭐⭐</option>
+                <option value="5">⭐⭐⭐⭐⭐</option>
+            </select>
+            <p id="avgRatingDisplay"></p>
+        </div>
 
         <div class="comments-section">
             <h2>📚 Discussion</h2>
@@ -111,6 +123,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             fetchBookDetails();
             loadComments();
+            loadRating(bookId);
             checkLoginStatus();
             setInterval(loadComments, 20000); // Auto-refresh comments
         });
@@ -131,17 +144,69 @@
                 .then(res => res.json())
                 .then(book => {
                     const html = `
-            <img src="http://localhost/new%20proj/open%20library/${book.image_path}" alt="${book.title}" onerror="this.src='fallback.jpg'" />
-            <h1>${book.title}</h1>
-            <p><strong>Author:</strong> ${book.author}</p>
-            <p><strong>Year:</strong> ${book.year}</p>
-            <p><strong>Description:</strong> ${book.description || "No description available."}</p>
-          `;
+                        <img src="http://localhost/new%20proj/open%20library/${book.image_path}" alt="${book.title}" onerror="this.src='fallback.jpg'" />
+                        <h1>${book.title}</h1>
+                        <p><strong>Author:</strong> ${book.author}</p>
+                        <p><strong>Year:</strong> ${book.year}</p>
+                        <p><strong>Description:</strong> ${book.description || "No description available."}</p>
+                    `;
                     document.getElementById("bookInfo").innerHTML = html;
                 })
                 .catch(err => {
                     document.getElementById("bookInfo").innerHTML = "<p class='text-center'>Failed to load book details.</p>";
                     console.error(err);
+                });
+        }
+
+        function loadRating(bookId) {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const username = user?.username;
+
+            fetch(`http://localhost/new%20proj/open%20library/backend/api/rating.php?book_id=${bookId}&username=${username || ''}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.average !== undefined) {
+                        document.getElementById("avgRatingDisplay").innerText = `Average Rating: ${data.average.toFixed(1)} ⭐`;
+                    }
+                    if (data.user_rating && document.getElementById("ratingInput")) {
+                        document.getElementById("ratingInput").value = data.user_rating;
+                    }
+                })
+                .catch(err => {
+                    console.error("Error loading rating:", err);
+                    alert("Failed to load rating.");
+                });
+        }
+
+        function submitRating() {
+            const rating = document.getElementById("ratingInput").value;
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (!user) {
+                alert("Please log in to rate.");
+                return;
+            }
+
+            fetch("http://localhost/new%20proj/open%20library/backend/api/rating.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    book_id: bookId,
+                    username: user.username,
+                    rating: parseInt(rating)
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Thanks for rating!");
+                        loadRating(bookId);
+                    } else {
+                        alert("Error rating: " + (data.error || "Unknown error"));
+                    }
+                })
+                .catch(err => {
+                    console.error("Error submitting rating:", err);
+                    alert("Failed to submit rating.");
                 });
         }
 
@@ -156,12 +221,12 @@
                     }
 
                     container.innerHTML = data.map(comment => `
-            <div class="comment">
-              <strong>${comment.username}</strong> 
-              <small>(${new Date(comment.created_at).toLocaleString()})</small>
-              <p>${comment.comment}</p>
-            </div>
-          `).join("");
+                        <div class="comment">
+                            <strong>${comment.username}</strong> 
+                            <small>(${new Date(comment.created_at).toLocaleString()})</small>
+                            <p>${comment.comment}</p>
+                        </div>
+                    `).join("");
                 })
                 .catch(err => {
                     document.getElementById("comments").innerHTML = "<p class='text-center'>Failed to load comments.</p>";
@@ -191,7 +256,7 @@
                 body: JSON.stringify({
                     username: user.username,
                     book_id: bookId,
-                    comment: text // ✅ Fixed: must be `comment` not `text`
+                    comment: text
                 })
             })
                 .then(res => res.json())

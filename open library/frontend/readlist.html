@@ -6,32 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Your Readlist - Open Library</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+       
+    </style>
 </head>
+<body class="bg-gray-50 text-gray-900 bg-cover bg-center"
+    style="background-image: url('http://localhost/new%20proj/open%20library/frontend/background.jpg');">
 
-<body class="bg-gray-100 text-gray-800">
+
     <!-- Navbar -->
-    <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
-        <h1 class="text-xl font-bold">📚 Open Library</h1>
-        <div>
-            <span id="userGreeting" class="mr-4"></span>
-            <button onclick="logout()"
-                class="bg-white text-blue-600 px-3 py-1 rounded hover:bg-gray-100">Logout</button>
+    <div class="navbar text-white p-4 shadow-md text-black bg-gradient-to-r from-pink-500 via-orange-400 to-indigo-600 text-white">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <!-- Logo -->
+            <img src="http://localhost/new%20proj/open%20library/frontend/logo.jpeg" alt="Open Library Logo" class="logo h-[60px] w-[60px]">
+            <div>
+                <span id="userGreeting" class="mr-6 text-xl font-medium text-black"></span>
+                <button onclick="logout()" class="btn-logout hover:bg-gray-100 text-black">Logout</button>
+            </div>
         </div>
     </div>
 
-    <!-- Container -->
-    <div class="max-w-4xl mx-auto mt-6 p-4 bg-white rounded shadow">
-        <h2 class="text-2xl font-semibold text-center mb-4">Your Reading List</h2>
-        <div id="readlistContainer" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <!-- Container for the Reading List -->
+    <div class="max-w-7xl mx-auto mt-8 px-6 py-8 bg-white rounded-lg shadow-md container">
+        <h2 class="text-3xl font-semibold text-center mb-6">Your Reading List</h2>
+
+        <!-- Readlist Container -->
+        <div id="readlistContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <!-- Book cards will go here -->
         </div>
-        <p id="emptyMessage" class="text-center text-gray-500 mt-4 hidden">No books in your reading list.</p>
+
+        <!-- Empty Message -->
+        <p id="emptyMessage" class="text-center text-gray-500 mt-6 hidden">No books in your reading list.</p>
     </div>
 
     <script>
         const user = JSON.parse(localStorage.getItem("user"));
         const username = user?.username;
-
         if (!username) {
             alert("Please login first.");
             window.location.href = "login.html";
@@ -57,20 +67,20 @@
 
                     data.readlist.forEach(item => {
                         const card = document.createElement("div");
-                        card.className = "bg-gray-50 p-4 rounded shadow hover:shadow-md transition";
+                        card.className = "bg-gray-50 p-4 rounded-lg shadow-md card hover:shadow-xl";
                         card.innerHTML = `
-              <img src="http://localhost/new%20proj/open%20library/${item.image_path}" 
-                   alt="${item.title}" 
-                   class="w-full h-40 object-cover rounded mb-2">
-              <h3 class="text-lg font-bold">${item.title}</h3>
-              <p><strong>Author:</strong> ${item.author}</p>
-              <p><strong>Status:</strong> ${item.status}</p>
-              <p class="text-sm text-gray-600">${item.notes || ""}</p>
-              <a href="http://localhost/new%20proj/open%20library/${item.pdf_path}" target="_blank"
-                 class="inline-block mt-2 text-blue-600 hover:underline">Read PDF</a>
-              <button onclick="removeFromReadlist(${item.readlist_id})"
-                      class="block mt-2 text-red-600 hover:underline text-sm">Remove</button>
-            `;
+                            <img src="http://localhost/new%20proj/open%20library/${item.image_path}" 
+                                alt="${item.title}" 
+                                class="w-full h-48 object-cover rounded-md mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">${item.title}</h3>
+                            <p><strong>Author:</strong> ${item.author}</p>
+                            <p><strong>Status:</strong> ${item.status}</p>
+                            <p class="text-sm text-gray-600">${item.notes || "No notes available."}</p>
+                            <a href="http://localhost/new%20proj/open%20library/${item.pdf_path}" target="_blank"
+                                class="inline-block mt-4 text-blue-600 hover:underline">Read PDF</a>
+                            <button onclick="removeFromReadlist(${item.readlist_id})"
+                                    class="block mt-2 text-red-600 hover:underline text-sm">Remove</button>
+                        `;
                         container.appendChild(card);
                     });
                 })
@@ -92,7 +102,7 @@
                     if (data.success) {
                         fetchReadlist();
                     } else {
-                        alert("Failed to delete: " + (data.error || ""));
+                        alert("Failed to delete: " + (data.error || "Unknown error."));
                     }
                 })
                 .catch(err => {
@@ -100,6 +110,7 @@
                 });
         }
 
+        // Load the readlist on page load
         document.addEventListener("DOMContentLoaded", fetchReadlist);
     </script>
 </body>

@@ -4,147 +4,82 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Adhyay- Home</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f3f4f6;
-            margin: 0;
-            padding: 0;
-        }
-
-        .navbar {
-            background-color: #2563eb;
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar a {
-            color: white;
-            text-decoration: none;
-            margin: 0 10px;
-            font-weight: bold;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-
-        h1,
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-
-        .search-box {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .book-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            padding: 10px;
-        }
-
-        .book-card {
-            background: white;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.2s;
-        }
-
-        .book-card:hover {
-            transform: scale(1.02);
-        }
-
-        .book-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-
-        .read-btn {
-            display: inline-block;
-            margin-top: 10px;
-            background: #2563eb;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            text-decoration: none;
-        }
-
-        .read-btn:hover {
-            background: #1e40af;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 10px;
-            margin-top: 20px;
-            background: #2563eb;
-            color: white;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-    </style>
+    <title>Adhyay - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="http://localhost/new%20proj/open%20library/loho1.jpg" />
 </head>
 
-<body>
+<body class="bg-gradient-to-r from-amber-500 via-amber-100 to-amber-500 font-sans">
 
-    <!-- Navigation bar -->
-    <div class="navbar">
-        <a href="index.html">📚 Adhyay</a>
-        <div>
-            <span id="userWelcome" class="hidden" style="margin-right: 10px;"></span>
-            <a id="loginLink" href="login.html">Login</a>
-            <a id="registerLink" href="register.html">Register</a>
-            <a id="logoutLink" href="#" onclick="logout()" class="hidden">Logout</a>
+    <!-- Navbar -->
+    <div class="flex items-center justify-between bg-gradient-to-r from-amber-900 to-amber-600 px-6 py-4 shadow-md">
+        <a href="index.html" class="flex items-center gap-2 text-2xl font-bold text-yellow-400">
+            <img src="http://localhost/new%20proj/open%20library/frontend/logo1.png" alt="Logo"
+                class="h-14 w-14 rounded-full object-cover border-2 border-yellow-500">
+            अध्याय
+        </a>
+        <div class="flex gap-14 items-center text-sm text-white pr-10">
+            <span id="userWelcome" class="hidden font-medium"></span>
+            <a id="loginLink" href="login.html" class="hover:underline border border-grey-600">Login</a>
+            <a id="registerLink" href="register.html" class="hover:underline p-2 border border-gray-600">Register</a>
+            <a id="readlistLink" href="readlist.html"
+                class="hover:underline p-3 border border-gray-600 bg-blue-600 font-bold rounded-xl">Readlist</a>
+            <a id="logoutLink" href="#"
+                class="hidden hover:underline text-white p-3 bg-red-700 border border-gray-600 font-bold rounded-xl"
+                onclick="logout()">Logout</a>
         </div>
     </div>
 
-    <!-- Welcome and Search -->
-    <div class="container">
-        <h1>Welcome to Open Library</h1>
-        <p class="text-center">Explore a vast collection of books</p>
-        <input id="search" type="text" placeholder="Search books..." class="search-box" onkeyup="searchBooks()" />
+    <!-- Image Slider -->
+    <!-- Image Slider -->
+    <div class="relative w-full h-[60vh] overflow-hidden">
+        <div  class="flex h-full transition-transform duration-700 ease-in-out">
+            <div class="flex-shrink-0 w-full h-full">
+                <img src="http://localhost/new%20proj/open%20library/frontend/pic4.webp"
+                    class="w-full h-full object-cover" />
+            </div>
+        </div>
     </div>
 
-    <!-- Book List Section -->
-    <div class="container">
-        <h2>Available Books</h2>
-        <div id="booksList" class="book-grid">
-            <p class="text-center">Loading books...</p>
+
+    <!-- Welcome Section -->
+    <div class="max-w-4xl mx-auto px-4 mt-10 text-center">
+        <h1 class="text-3xl font-bold mb-2">अध्याय में आपका स्वागत है</h1>
+        <p class="text-gray-600 mb-6">Explore a vast collection of books and join the club discussion</p>
+        <input id="search" type="text" placeholder="Search books..."
+            class="w-full sm:w-96 p-3 border rounded-md shadow-sm focus:outline-none focus:ring focus:ring-indigo-300"
+            onkeyup="searchBooks()" />
+    </div>
+
+    <!-- Book List -->
+    <div class="max-w-6xl mx-auto mt-10 px-4">
+        <h2 class="text-2xl font-semibold mb-4">Available Books</h2>
+        <div id="booksList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <p class="text-center col-span-full">Loading books...</p>
+        </div>
+    </div>
+
+    <!-- Join Book Club Section -->
+    <div class="max-w-6xl mx-auto mt-16 px-4">
+        <h2 class="text-2xl font-semibold mb-4 text-center">📚 Join Our Book Club</h2>
+        <div
+            class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between shadow-md">
+            <div class="mb-4 sm:mb-0">
+                <h3 class="text-xl font-bold">Connect. Discuss. Discover.</h3>
+                <p class="text-sm text-purple-100 mt-2 max-w-lg">
+                    Dive into deep discussions, share your reviews, suggest new reads, and meet fellow book lovers.
+                </p>
+            </div>
+            <a href="bookclub.html"
+                class="bg-white text-purple-700 font-semibold px-5 py-2 rounded-lg hover:bg-purple-100 transition mt-4 sm:mt-0">
+                Join Now →
+            </a>
         </div>
     </div>
 
     <!-- Footer -->
-    <div class="footer">
-        <p>&copy; 2025 Open Library. All rights reserved.</p>
+    <div class="text-center py-6 mt-10 bg-white shadow-inner text-sm text-gray-500">
+        &copy; 2025 Open Library. All rights reserved.
     </div>
 
     <!-- JavaScript -->
@@ -152,28 +87,21 @@
         document.addEventListener("DOMContentLoaded", function () {
             checkLogin();
             loadBooks();
-
-            // Auto-reload every 50 seconds
-            setInterval(() => {
-                window.location.reload();
-            }, 50000);
+            setInterval(() => loadBooks(), 50000);
         });
 
         function checkLogin() {
             const user = JSON.parse(localStorage.getItem("user"));
             const welcomeEl = document.getElementById("userWelcome");
-
             if (user && user.username) {
                 welcomeEl.textContent = `👋 Hello, ${user.username}`;
                 welcomeEl.classList.remove("hidden");
-
                 document.getElementById("loginLink").classList.add("hidden");
                 document.getElementById("registerLink").classList.add("hidden");
                 document.getElementById("logoutLink").classList.remove("hidden");
             } else {
                 welcomeEl.textContent = "";
                 welcomeEl.classList.add("hidden");
-
                 document.getElementById("loginLink").classList.remove("hidden");
                 document.getElementById("registerLink").classList.remove("hidden");
                 document.getElementById("logoutLink").classList.add("hidden");
@@ -184,9 +112,10 @@
             localStorage.removeItem("user");
             window.location.href = "login.html";
         }
-    function redirectToDetails(bookId) {
-        window.location.href = `book.html?id=${bookId}`;
-    }
+
+        function redirectToDetails(bookId) {
+            window.location.href = `book.html?id=${bookId}`;
+        }
 
         function loadBooks() {
             fetch("http://localhost/new%20proj/open%20library/backend/api/books.php")
@@ -196,29 +125,33 @@
                     booksList.innerHTML = "";
 
                     if (!Array.isArray(data) || data.length === 0) {
-                        booksList.innerHTML = `<p class="text-center">No books available.</p>`;
+                        booksList.innerHTML = `<p class="text-center col-span-full">No books available.</p>`;
                         return;
                     }
 
                     data.forEach(book => {
                         const bookCard = `
-    <div class="book-card" onclick="redirectToDetails(${book.id})" style="cursor: pointer;">
-        <img src="http://localhost/new%20proj/open%20library/${book.image_path}" 
-             alt="${book.title} Cover"
-             onerror="this.src='http://localhost/new%20proj/open%20library/frontend/falback.jpg'" />
-        <h3>${book.title}</h3>
-        <p><strong>Author:</strong> ${book.author}</p>
-        <p><strong>Year:</strong> ${book.year}</p>
-        ${isLoggedIn() ? `<button class="read-btn" onclick="event.stopPropagation(); addToReadlist(${book.id})">+ Add to Readlist</button>` : ''}
-    </div>
-`;
-
+              <div class="book-card bg-white rounded-lg shadow-md overflow-hidden transition hover:shadow-lg cursor-pointer"
+                  onclick="redirectToDetails(${book.id})">
+                <img src="http://localhost/new%20proj/open%20library/${book.image_path}"
+                  alt="${book.title} Cover"
+                  onerror="this.src='http://localhost/new%20proj/open%20library/frontend/falback.jpg'"
+                  class="w-full h-48 object-cover" />
+                <div class="p-4">
+                  <h3 class="text-lg font-bold mb-1">${book.title}</h3>
+                  <p class="text-sm text-gray-600 mb-1"><strong>Author:</strong> ${book.author}</p>
+                  <p class="text-sm text-gray-600 mb-2"><strong>Year:</strong> ${book.year}</p>
+                  ${isLoggedIn() ? `<button class="bg-indigo-600 text-white text-sm px-3 py-1 rounded hover:bg-indigo-700"
+                    onclick="event.stopPropagation(); addToReadlist(${book.id})">+ Add to Readlist</button>` : ''}
+                </div>
+              </div>
+            `;
                         booksList.innerHTML += bookCard;
                     });
                 })
                 .catch(error => {
                     console.error("Error fetching books:", error);
-                    document.getElementById("booksList").innerHTML = `<p class="text-center">Failed to load books.</p>`;
+                    document.getElementById("booksList").innerHTML = `<p class="text-center col-span-full">Failed to load books.</p>`;
                 });
         }
 
@@ -230,9 +163,8 @@
         function searchBooks() {
             let input = document.getElementById("search").value.toLowerCase();
             let books = document.querySelectorAll(".book-card");
-
             books.forEach(book => {
-                let title = book.querySelector("h3").textContent.toLowerCase();
+                let title = book.querySelector("h3")?.textContent.toLowerCase() || "";
                 book.style.display = title.includes(input) ? "block" : "none";
             });
         }
@@ -240,21 +172,16 @@
         function addToReadlist(bookId) {
             const user = JSON.parse(localStorage.getItem("user"));
             const username = user?.username;
-
             if (!username) {
                 alert("Please log in to add books to your readlist.");
                 return;
             }
-
             fetch("http://localhost/new%20proj/open%20library/backend/api/readlist.php", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    username: username,
-                    book_id: bookId
-                })
+                body: JSON.stringify({ username, book_id: bookId })
             })
                 .then(response => response.json())
                 .then(data => {
@@ -269,7 +196,22 @@
                     alert("Failed to add book to readlist.");
                 });
         }
+
+        // Auto Slider Logic
+        const slider = document.getElementById("slider");
+        const slides = slider.querySelectorAll("img");
+        let currentIndex = 0;
+
+        function updateSlider() {
+            slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
+
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % slides.length;
+            updateSlider();
+        }, 4000);
     </script>
+
 </body>
 
 </html>
