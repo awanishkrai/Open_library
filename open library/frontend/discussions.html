@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adhyay - Discussion Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="frontend/logo1.png" />
+</head>
+
+<body class="bg-gradient-to-r from-amber-500 via-amber-100 to-amber-500 font-sans">
+
+    <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-amber-900 to-amber-600 px-6 py-4 flex justify-between items-center shadow-md">
+        <a href="index.html" class="flex items-center gap-2 text-2xl font-bold text-yellow-400">
+            <img src="http://localhost/new%20proj/open%20library/frontend/logo1.png" alt="Logo"
+                class="h-12 w-12 rounded-full border-2 border-yellow-500" />
+            अध्याय
+        </a>
+        <div class="flex items-center gap-4 text-white text-sm">
+            <span id="userWelcome" class="hidden font-medium"></span>
+            <button onclick="logout()" id="logoutLink"
+                class="hidden bg-red-600 hover:bg-red-700 px-3 py-1 rounded">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Discussion Details -->
+    <section class="max-w-4xl mx-auto mt-10 px-4">
+        <div id="discussionContent" class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-2xl font-semibold text-indigo-700 mb-4">Loading Discussion...</h2>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow mt-6">
+            <h3 class="text-xl font-semibold mb-4">Add a Comment</h3>
+            <textarea id="commentText" rows="3" placeholder="Add your comment..."
+                class="w-full p-3 border rounded focus:ring focus:ring-indigo-300"></textarea>
+            <button onclick="addComment()"
+                class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Post Comment</button>
+        </div>
+
+        <div id="commentsSection" class="mt-6 space-y-4">
+            <h3 class="text-xl font-semibold text-gray-700">Comments</h3>
+            <!-- Comments will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+<!-- Updated Footer with Matching Header Colors -->
+<footer class="bg-gradient-to-r from-amber-900 to-amber-600 mt-16 text-white">
+    <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
+        <div>
+            <h4 class="font-bold text-yellow-400 mb-2">About Adhyay</h4>
+            <p>Adhyay is a community of book lovers. Discover, discuss, and dive into great reads together.</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-yellow-400 mb-2">Quick Links</h4>
+            <ul class="space-y-1">
+                <li><a href="index.html" class="hover:underline">Home</a></li>
+                <li><a href="club.html" class="hover:underline">Book Club</a></li>
+                <li><a href="readlist.html" class="hover:underline">Your Readlist</a></li>
+                <li><a href="login.html" class="hover:underline">Login / Register</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-yellow-400 mb-2">Follow Us</h4>
+            <div class="flex justify-center sm:justify-start gap-4 text-lg">
+                <a href="https://github.com/awanishkrai" target="_blank" class="hover:text-yellow-300">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="hover:text-blue-600">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="hover:text-indigo-600">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="text-center py-4 border-t mt-6 text-gray-200">
+        &copy; 2025 <a href="https://github.com/awanishkrai" class="hover:underline">awanishkrai</a>. All rights
+        reserved.
+    </div>
+</footer>
+
+
+    <script>
+        let username;
+        const discussionId = new URLSearchParams(window.location.search).get("id");
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (!user?.username) {
+                alert("Please login first.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            username = user.username;
+            document.getElementById("userWelcome").textContent = `👋 Hello, ${username}`;
+            document.getElementById("userWelcome").classList.remove("hidden");
+            document.getElementById("logoutLink").classList.remove("hidden");
+
+            if (!discussionId) {
+                alert("Invalid discussion ID.");
+                return;
+            }
+
+            loadDiscussion();
+            loadComments();
+        });
+
+        function logout() {
+            localStorage.removeItem("user");
+            window.location.href = "login.html";
+        }
+
+        // Load Discussion Content
+        function loadDiscussion() {
+                fetch(`http://localhost/new%20proj/open%20library/backend/api/club_discussions/details.php?id=${discussionId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const content = document.getElementById("discussionContent");
+                        const commentsSection = document.getElementById("commentsSection");
+
+                        // Check if the response is valid
+                        if (!data || data.error) {
+                            content.innerHTML = `<p class="text-red-600">Failed to load the discussion.</p>`;
+                            commentsSection.innerHTML = `<p class="text-red-600">Failed to load comments.</p>`;
+                            return;
+                        }
+
+                        // Display Discussion
+                        content.innerHTML = `
+                <h2 class="text-2xl font-semibold text-indigo-700">${data.title}</h2>
+           
+               
+                <p class="text-xs text-gray-400 mt-2">Created on: ${new Date(data.created_at).toLocaleString()}</p>
+            `;
+
+                        // Display Comments
+                        commentsSection.innerHTML = "";
+
+                        if (!data.comments || data.comments.length === 0) {
+                            commentsSection.innerHTML = `<p class="text-gray-500">No comments yet. Be the first to comment!</p>`;
+                        } else {
+                            data.comments.forEach(comment => {
+                                const commentDiv = document.createElement("div");
+                                commentDiv.className = "bg-gray-50 p-4 rounded-lg shadow";
+                                commentDiv.innerHTML = `
+                        <p class="font-semibold text-gray-700">${comment.user_name}</p>
+                        <p class="text-gray-700">${comment.comment}</p>
+                        <p class="text-xs text-gray-400 mt-2">Commented on: ${new Date(comment.created_at).toLocaleString()}</p>
+                    `;
+                                commentsSection.appendChild(commentDiv);
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById("discussionContent").innerHTML = `<p class='text-red-600'>Failed to load the discussion.</p>`;
+                        document.getElementById("commentsSection").innerHTML = `<p class='text-red-600'>Failed to load comments.</p>`;
+                    });
+            }
+
+
+        // Add Comment
+        function addComment() {
+                const commentText = document.getElementById("commentText").value.trim();
+
+                if (!commentText) {
+                    alert("Please enter a comment.");
+                    return;
+                }
+
+                fetch("http://localhost/new%20proj/open%20library/backend/api/club_discussions/comment.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        discussion_id: discussionId,  
+                        username: username,          
+                        comment: commentText          
+                    })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById("commentText").value = "";
+                            loadComments();  
+                        } else {
+                            alert(data.error || "Error adding comment.");
+                        }
+                    })
+                    .catch(() => {
+                        var h=1;
+                    });
+            }
+
+    </script>
+
+</body>
+
+</html>

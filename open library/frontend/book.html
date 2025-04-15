@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Details - Adhyay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+
+<body
+    class="bg-gradient-to-r from-amber-500 via-amber-100 to-amber-500 font-sans min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <div class="flex items-center justify-between bg-gradient-to-r from-amber-900 to-amber-600 px-6 py-4 shadow-md">
+        <a href="index.html" class="flex items-center gap-2 text-2xl font-bold text-yellow-400">
+            <img src="http://localhost/new%20proj/open%20library/frontend/logo1.png" alt="Logo"
+                class="h-14 w-14 rounded-full object-cover border-2 border-yellow-500">
+            अध्याय
+        </a>
+        <div class="flex gap-6 items-center text-sm text-white pr-10">
+            <span id="userWelcome" class="hidden font-medium"></span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        <div class="max-w-4xl mx-auto px-4 py-12 space-y-12">
+
+            <!-- Book Info -->
+            <section id="bookInfo" class="bg-white border border-gray-200 rounded-2xl shadow-md p-6 text-center">
+                <p class="text-gray-400">Loading book details...</p>
+            </section>
+
+            <!-- Rating Section -->
+            <section class="bg-white border border-gray-200 rounded-2xl shadow-md p-6 text-center">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">🌟 Rate this Book</h2>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                    <select id="ratingInput" onchange="submitRating()"
+                        class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="">Rate</option>
+                        <option value="1">⭐</option>
+                        <option value="2">⭐⭐</option>
+                        <option value="3">⭐⭐⭐</option>
+                        <option value="4">⭐⭐⭐⭐</option>
+                        <option value="5">⭐⭐⭐⭐⭐</option>
+                    </select>
+                    <p id="avgRatingDisplay" class="text-sm text-gray-600"></p>
+                </div>
+            </section>
+
+            <!-- Discussion Section -->
+            <section class="bg-white border border-gray-200 rounded-2xl shadow-md p-6">
+                <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">💬 Discussion</h2>
+
+                <!-- Comments -->
+                <div id="comments" class="space-y-4"></div>
+
+                <!-- Comment Form -->
+                <div id="commentFormContainer" class="hidden mt-6">
+                    <textarea id="commentText" rows="3" placeholder="Share your thoughts..."
+                        class="w-full p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-amber-400"></textarea>
+                    <button onclick="submitComment()"
+                        class="mt-3 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition">
+                        Post Comment
+                    </button>
+                </div>
+
+                <!-- Login Prompt -->
+                <p id="loginPrompt" class="text-center text-sm text-gray-500 hidden mt-6">
+                    🔒 Please <a href="login.html" class="text-amber-500 underline">log in</a> to post a comment.
+                </p>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-amber-900 to-amber-600 mt-16 text-white">
+        <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
+            <div>
+                <h4 class="font-bold text-yellow-400 mb-2">About Adhyay</h4>
+                <p>Adhyay is a community of book lovers. Discover, discuss, and dive into great reads together.</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-yellow-400 mb-2">Quick Links</h4>
+                <ul class="space-y-1">
+                    <li><a href="index.html" class="hover:underline">Home</a></li>
+                    <li><a href="clubs.html" class="hover:underline">Book Club</a></li>
+                    <li><a href="readlist.html" class="hover:underline">Your Readlist</a></li>
+                    <li><a href="login.html" class="hover:underline">Login / Register</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-yellow-400 mb-2">Follow Us</h4>
+                <div class="flex justify-center sm:justify-start gap-4 text-lg">
+                    <a href="https://github.com/awanishkrai" target="_blank" class="hover:text-yellow-300">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="hover:text-blue-400">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="hover:text-pink-400">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center py-4 border-t border-amber-700 text-gray-200">
+            &copy; 2025 <a href="https://github.com/awanishkrai" class="hover:underline">awanishkrai</a>. All rights
+            reserved.
+        </div>
+    </footer>
+
+    <!-- Script Section -->
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const bookId = params.get("id");
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchBookDetails();
+            loadComments();
+            loadRating(bookId);
+            checkLoginStatus();
+            setInterval(loadComments, 20000);
+        });
+
+        function checkLoginStatus() {
+            const user = JSON.parse(localStorage.getItem("user"));
+            document.getElementById("commentFormContainer").classList.toggle("hidden", !user?.username);
+            document.getElementById("loginPrompt").classList.toggle("hidden", !!user?.username);
+        }
+
+        function fetchBookDetails() {
+            fetch(`http://localhost/new%20proj/open%20library/backend/api/book_details.php?id=${bookId}`)
+                .then(res => res.json())
+                .then(book => {
+                    const html = `
+                        <img src="http://localhost/new%20proj/open%20library/${book.image_path}" alt="${book.title}" onerror="this.src='fallback.jpg'" class="mx-auto rounded-lg w-48 shadow" />
+                        <h1 class="text-3xl font-bold text-gray-800 mt-4">${book.title}</h1>
+                        <p class="text-gray-600"><span class="font-medium">Author:</span> ${book.author}</p>
+                        <p class="text-gray-600"><span class="font-medium">Year:</span> ${book.year}</p>
+                        <p class="text-gray-700 max-w-prose mx-auto mt-2"><span class="font-medium">Description:</span> ${book.description || "No description available."}</p>
+                    `;
+                    document.getElementById("bookInfo").innerHTML = html;
+                })
+                .catch(err => {
+                    document.getElementById("bookInfo").innerHTML = "<p class='text-gray-500'>Failed to load book details.</p>";
+                    console.error(err);
+                });
+        }
+
+        function loadRating(bookId) {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const username = user?.username;
+
+            fetch(`http://localhost/new%20proj/open%20library/backend/api/rating.php?book_id=${bookId}&username=${username || ''}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.average !== undefined) {
+                        document.getElementById("avgRatingDisplay").innerText = `Average Rating: ${data.average.toFixed(1)} ⭐`;
+                    }
+                    if (data.user_rating && document.getElementById("ratingInput")) {
+                        document.getElementById("ratingInput").value = data.user_rating;
+                    }
+                })
+                .catch(err => {
+                    console.error("Error loading rating:", err);
+                    alert("Failed to load rating.");
+                });
+        }
+
+        function submitRating() {
+            const rating = document.getElementById("ratingInput").value;
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (!user) {
+                alert("Please log in to rate.");
+                return;
+            }
+
+            fetch("http://localhost/new%20proj/open%20library/backend/api/rating.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    book_id: bookId,
+                    username: user.username,
+                    rating: parseInt(rating)
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Thanks for rating!");
+                        loadRating(bookId);
+                    } else {
+                        alert("Error rating: " + (data.error || "Unknown error"));
+                    }
+                })
+                .catch(err => {
+                    console.error("Error submitting rating:", err);
+                    alert("Failed to submit rating.");
+                });
+        }
+
+        function loadComments() {
+            fetch(`http://localhost/new%20proj/open%20library/backend/api/discussion.php?book_id=${bookId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById("comments");
+                    if (!Array.isArray(data) || data.length === 0) {
+                        container.innerHTML = "<p class='text-center text-gray-400'>No comments yet.</p>";
+                        return;
+                    }
+
+                    container.innerHTML = data.map(comment => `
+                        <div class="bg-gray-50 p-4 rounded-md shadow-sm border border-gray-200">
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <strong>${comment.username}</strong>
+                                <span>${new Date(comment.created_at).toLocaleString()}</span>
+                            </div>
+                            <p class="text-gray-800">${comment.comment}</p>
+                        </div>
+                    `).join("");
+                })
+                .catch(err => {
+                    document.getElementById("comments").innerHTML = "<p class='text-center text-gray-500'>Failed to load comments.</p>";
+                    console.error(err);
+                });
+        }
+
+        function submitComment() {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const text = document.getElementById("commentText").value.trim();
+
+            if (!user || !user.username) {
+                alert("You must be logged in to comment.");
+                return;
+            }
+
+            if (!text) {
+                alert("Please write something before posting!");
+                return;
+            }
+
+            fetch("http://localhost/new%20proj/open%20library/backend/api/discussion.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: user.username,
+                    book_id: bookId,
+                    comment: text
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("commentText").value = "";
+                        loadComments();
+                    } else {
+                        alert("Error: " + (data.error || "Could not post comment."));
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Failed to post comment.");
+                });
+        }
+    </script>
+</body>
+
+</html>

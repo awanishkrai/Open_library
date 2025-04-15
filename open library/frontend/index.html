@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adhyay - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="http://localhost/new%20proj/open%20library/loho1.jpg" />
+    
+</head>
+
+<body class="bg-gradient-to-r from-amber-500 via-amber-100 to-amber-500 font-sans">
+
+    <!-- Navbar -->
+    <div class="flex items-center justify-between bg-gradient-to-r from-amber-900 to-amber-600 px-6 py-4 shadow-md">
+        <a href="index.html" class="flex items-center gap-2 text-2xl font-bold text-yellow-400">
+            <img src="http://localhost/new%20proj/open%20library/frontend/logo1.png" alt="Logo"
+                class="h-14 w-14 rounded-full object-cover border-2 border-yellow-500">
+            अध्याय
+        </a>
+        <div class="flex gap-6 items-center text-sm text-white pr-10">
+            <span id="userWelcome" class="hidden font-medium"></span>
+            <a id="addBookLink" href="add_book.html"
+                class="hidden px-4 py-2 rounded-full bg-gradient-to-r from-green-700 to-green-500 hover:from-green-600 hover:to-green-400 transition duration-200 shadow-sm font-medium">
+                ➕ Add Book
+            </a>
+            <a id="loginLink" href="login.html"
+                class="px-4 py-2 rounded-full bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 transition duration-200 shadow-sm">
+                Login
+            </a>
+            <a id="registerLink" href="register.html"
+                class="px-4 py-2 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 transition duration-200 shadow-sm font-medium">
+                Register
+            </a>
+            <a id="readlistLink" href="readlist.html"
+                class="px-5 py-2 rounded-full bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-600 hover:to-blue-400 transition duration-200 shadow-md font-semibold">
+                📘 Readlist
+            </a>
+            <a id="logoutLink" href="#"
+                class="hidden px-5 py-2 rounded-full bg-gradient-to-r from-red-700 to-red-500 hover:from-red-600 hover:to-red-400 transition duration-200 shadow-md font-semibold"
+                onclick="logout()">
+                🚪 Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Image Slider -->
+    <div class="relative w-full h-[60vh] overflow-hidden">
+        <div class="flex h-full transition-transform duration-700 ease-in-out">
+            <div class="flex-shrink-0 w-full h-full">
+                <img src="http://localhost/new%20proj/open%20library/frontend/pic4.webp"
+                    class="w-full h-full object-cover" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Welcome Section -->
+    <div class="max-w-4xl mx-auto px-4 mt-10 text-center">
+        <h1 class="text-3xl font-bold mb-2">अध्याय में आपका स्वागत है</h1>
+        <p class="text-gray-600 mb-6">Explore a vast collection of books and join the club discussion</p>
+        <input id="search" type="text" placeholder="Search books..."
+            class="w-full sm:w-96 p-3 border rounded-md shadow-sm focus:outline-none focus:ring focus:ring-indigo-300"
+            onkeyup="searchBooks()" />
+    </div>
+
+    <!-- Book List -->
+    <div class="max-w-6xl mx-auto mt-10 px-4">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-semibold">Available Books</h2>
+            <a id="addBookSection" href="add_book.html"
+                class="hidden bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-500 transition text-sm font-semibold">
+                ➕ Add Book
+            </a>
+        </div>
+        <div id="booksList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <p class="text-center col-span-full">Loading books...</p>
+        </div>
+    </div>
+
+    <!-- Join Book Club Section -->
+    <div class="max-w-6xl mx-auto mt-16 px-4">
+        <h2 class="text-2xl font-semibold mb-4 text-center">Join Our Book Club</h2>
+        <div
+            class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between shadow-md">
+            <div class="mb-4 sm:mb-0">
+                <h3 class="text-xl font-bold">Connect. Discuss. Discover.</h3>
+                <p class="text-sm text-purple-100 mt-2 max-w-lg">
+                    Dive into deep discussions, share your reviews, suggest new reads, and meet fellow book lovers.
+                </p>
+            </div>
+            <a href="club.html"
+                class="bg-white text-purple-700 font-semibold px-5 py-2 rounded-lg hover:bg-purple-100 transition mt-4 sm:mt-0">
+                Join Now →
+            </a>
+        </div>
+    </div>
+
+    <!-- Updated Footer -->
+<!-- Updated Footer with Matching Header Colors -->
+<footer class="bg-gradient-to-r from-amber-900 to-amber-600 mt-16 text-white">
+    <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
+        <div>
+            <h4 class="font-bold text-yellow-400 mb-2">About Adhyay</h4>
+            <p>Adhyay is a community of book lovers. Discover, discuss, and dive into great reads together.</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-yellow-400 mb-2">Quick Links</h4>
+            <ul class="space-y-1">
+                <li><a href="index.html" class="hover:underline">Home</a></li>
+                <li><a href="club.html" class="hover:underline">Book Club</a></li>
+                <li><a href="readlist.html" class="hover:underline">Your Readlist</a></li>
+                <li><a href="login.html" class="hover:underline">Login / Register</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-yellow-400 mb-2">Follow Us</h4>
+            <div class="flex justify-center sm:justify-start gap-4 text-lg">
+                <a href="https://github.com/awanishkrai" target="_blank" class="hover:text-yellow-300">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="hover:text-blue-600">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="hover:text-indigo-600">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="text-center py-4 border-t mt-6 text-gray-200">
+        &copy; 2025 <a href="https://github.com/awanishkrai" class="hover:underline">awanishkrai</a>. All rights
+        reserved.
+    </div>
+</footer>
+
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            checkLogin();
+            loadBooks();
+            setInterval(() => loadBooks(), 50000);
+        });
+
+        function checkLogin() {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const welcomeEl = document.getElementById("userWelcome");
+            if (user && user.username) {
+                welcomeEl.textContent = `👋 Hello, ${user.username}`;
+                welcomeEl.classList.remove("hidden");
+                document.getElementById("loginLink").classList.add("hidden");
+                document.getElementById("registerLink").classList.add("hidden");
+                document.getElementById("logoutLink").classList.remove("hidden");
+                document.getElementById("addBookLink").classList.remove("hidden");
+                document.getElementById("addBookSection").classList.remove("hidden");
+            } else {
+                welcomeEl.textContent = "";
+                welcomeEl.classList.add("hidden");
+                document.getElementById("loginLink").classList.remove("hidden");
+                document.getElementById("registerLink").classList.remove("hidden");
+                document.getElementById("logoutLink").classList.add("hidden");
+                document.getElementById("addBookLink").classList.add("hidden");
+                document.getElementById("addBookSection").classList.add("hidden");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("user");
+            window.location.href = "login.html";
+        }
+
+        function _internalMarker_2025_awanishkrai() {
+            return {
+                owner: "awanishkrai",
+                project: "© 2025 awanishkrai",
+                github: "https://github.com/awanishkrai",
+                note: "Unauthorized use of this code is strictly prohibited."
+            };
+        }
+
+        function redirectToDetails(bookId) {
+            window.location.href = `book.html?id=${bookId}`;
+        }
+
+        function loadBooks() {
+            fetch("http://localhost/new%20proj/open%20library/backend/api/books.php")
+                .then(response => response.json())
+                .then(data => {
+                    const booksList = document.getElementById("booksList");
+                    booksList.innerHTML = "";
+
+                    if (!Array.isArray(data) || data.length === 0) {
+                        booksList.innerHTML = `<p class="text-center col-span-full">No books available.</p>`;
+                        return;
+                    }
+
+                    data.forEach(book => {
+                        const bookCard = `
+                        <div class="book-card bg-white rounded-lg shadow-md overflow-hidden transition hover:shadow-lg cursor-pointer"
+                            onclick="redirectToDetails(${book.id})">
+                            <img src="http://localhost/new%20proj/open%20library/${book.image_path}"
+                                alt="${book.title} Cover"
+                                onerror="this.src='http://localhost/new%20proj/open%20library/frontend/falback.jpg'"
+                                class="w-full h-48 object-cover" />
+                            <div class="p-4">
+                                <h3 class="text-lg font-bold mb-1">${book.title}</h3>
+                                <p class="text-sm text-gray-600 mb-1"><strong>Author:</strong> ${book.author}</p>
+                                <p class="text-sm text-gray-600 mb-2"><strong>Year:</strong> ${book.year}</p>
+                                ${isLoggedIn() ? `<button class="bg-indigo-600 text-white text-sm px-3 py-1 rounded hover:bg-indigo-700"
+                                onclick="event.stopPropagation(); addToReadlist(${book.id})">+ Add to Readlist</button>` : ''}
+                            </div>
+                        </div>
+                        `;
+                        booksList.innerHTML += bookCard;
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching books:", error);
+                    document.getElementById("booksList").innerHTML = `<p class="text-center col-span-full">Failed to load books.</p>`;
+                });
+        }
+
+        function isLoggedIn() {
+            const user = JSON.parse(localStorage.getItem("user"));
+            return user && user.username;
+        }
+
+        function searchBooks() {
+            let input = document.getElementById("search").value.toLowerCase();
+            let books = document.querySelectorAll(".book-card");
+            books.forEach(book => {
+                let title = book.querySelector("h3")?.textContent.toLowerCase() || "";
+                book.style.display = title.includes(input) ? "block" : "none";
+            });
+        }
+
+        function addToReadlist(bookId) {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const username = user?.username;
+            if (!username) {
+                alert("Please log in to add books to your readlist.");
+                return;
+            }
+            fetch("http://localhost/new%20proj/open%20library/backend/api/readlist.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, book_id: bookId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Book added to your readlist!");
+                    } else {
+                        alert("Error: " + (data.error || "Something went wrong."));
+                    }
+                })
+                .catch(error => {
+                    console.error("Error adding to readlist:", error);
+                    alert("Failed to add book to readlist.");
+                });
+        }
+    </script>
+
+</body>
+
+</html>

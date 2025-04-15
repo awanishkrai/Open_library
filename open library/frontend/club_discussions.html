@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adhyay - Club Discussions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="frontend/logo1.png" />
+</head>
+
+<body class="bg-gradient-to-r from-amber-500 via-amber-100 to-amber-500 font-sans">
+
+    <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-amber-900 to-amber-600 px-6 py-4 flex justify-between items-center shadow-md">
+        <a href="index.html" class="flex items-center gap-2 text-2xl font-bold text-yellow-400">
+            <img src="http://localhost/new%20proj/open%20library/frontend/logo1.png" alt="Logo"
+                class="h-12 w-12 rounded-full border-2 border-yellow-500" />
+            अध्याय
+        </a>
+        <div class="flex items-center gap-4 text-white text-sm">
+            <span id="userWelcome" class="hidden font-medium"></span>
+            <button onclick="logout()" id="logoutLink"
+                class="hidden bg-red-600 hover:bg-red-700 px-3 py-1 rounded">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Discussions -->
+    <section class="max-w-4xl mx-auto mt-10 px-4">
+        <h2 class="text-2xl font-semibold text-white mb-4">📚 Book Discussions</h2>
+
+        <div id="discussionList" class="space-y-4 mb-10">
+            <p class="text-white">Loading discussions...</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-bold mb-4">Start a New Discussion</h3>
+            <input id="bookId" type="text" placeholder="Open Library Book ID (e.g., OL12345M)"
+                class="w-full p-3 mb-3 border rounded" />
+            <input id="discussionTitle" type="text" placeholder="Discussion Title"
+                class="w-full p-3 mb-3 border rounded" />
+            <button onclick="createDiscussion()"
+                class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Create Discussion</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+<!-- Updated Footer with Matching Header Colors -->
+<footer class="bg-gradient-to-r from-amber-900 to-amber-600 mt-16 text-white">
+    <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
+        <div>
+            <h4 class="font-bold text-yellow-400 mb-2">About Adhyay</h4>
+            <p>Adhyay is a community of book lovers. Discover, discuss, and dive into great reads together.</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-yellow-400 mb-2">Quick Links</h4>
+            <ul class="space-y-1">
+                <li><a href="index.html" class="hover:underline">Home</a></li>
+                <li><a href="club.html" class="hover:underline">Book Club</a></li>
+                <li><a href="readlist.html" class="hover:underline">Your Readlist</a></li>
+                <li><a href="login.html" class="hover:underline">Login / Register</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-yellow-400 mb-2">Follow Us</h4>
+            <div class="flex justify-center sm:justify-start gap-4 text-lg">
+                <a href="https://github.com/awanishkrai" target="_blank" class="hover:text-yellow-300">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="hover:text-blue-600">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="hover:text-indigo-600">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="text-center py-4 border-t mt-6 text-gray-200">
+        &copy; 2025 <a href="https://github.com/awanishkrai" class="hover:underline">awanishkrai</a>. All rights
+        reserved.
+    </div>
+</footer>
+
+
+    <script>
+        let username;
+        const clubId = new URLSearchParams(window.location.search).get("id");
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (!user?.username) {
+                alert("Please login first.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            username = user.username;
+            document.getElementById("userWelcome").textContent = `👋 Hello, ${username}`;
+            document.getElementById("userWelcome").classList.remove("hidden");
+            document.getElementById("logoutLink").classList.remove("hidden");
+
+            loadDiscussions();
+        });
+
+        function logout() {
+            localStorage.removeItem("user");
+            window.location.href = "login.html";
+        }
+
+        function loadDiscussions() {
+            fetch(`http://localhost/new%20proj/open%20library/backend/api/club_discussions/get_discussions.php?club_id=${clubId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById("discussionList");
+                    list.innerHTML = "";
+
+                    if (!data.length) {
+                        list.innerHTML = `<p class="text-white">No discussions yet. Start one below!</p>`;
+                        return;
+                    }
+
+                    data.forEach(d => {
+                        const card = document.createElement("div");
+                        card.className = "bg-white p-4 rounded-lg shadow-md";
+                        card.innerHTML = `
+              <h4 class="text-xl font-semibold text-indigo-700">${d.title}</h4>
+              <p class="text-sm text-gray-700">Book ID: <span class="font-mono">${d.book_id}</span></p>
+              <p class="text-sm text-gray-500">Started by <strong>${d.started_by}</strong> on ${new Date(d.created_at).toLocaleString()}</p>
+              <a href="discussions.html?id=${d.id}" class="inline-block mt-2 text-blue-600 hover:underline">View ➤</a>
+            `;
+                        list.appendChild(card);
+                    });
+                })
+                .catch(() => {
+                    document.getElementById("discussionList").innerHTML = `<p class='text-red-600'>Failed to load discussions.</p>`;
+                });
+        }
+
+        function createDiscussion() {
+            const book_id = document.getElementById("bookId").value.trim();
+            const title = document.getElementById("discussionTitle").value.trim();
+
+            if (!book_id || !title) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            fetch("http://localhost/new%20proj/open%20library/backend/api/club_discussions/create%20discussion.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    club_id: clubId,
+                    book_id: book_id,
+                    title: title,
+                    username: username
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("bookId").value = "";
+                        document.getElementById("discussionTitle").value = "";
+                        loadDiscussions();
+                    } else {
+                        alert(data.error || "Error creating discussion.");
+                    }
+                });
+        }
+    </script>
+</body>
+
+</html>

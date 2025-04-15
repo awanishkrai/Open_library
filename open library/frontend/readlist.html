@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Readlist - Adhyay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="http://localhost/new%20proj/open%20library/logo1.png" />
+    <style>
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fade-in 0.5s ease-out;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-yellow-200 via-amber-100 to-yellow-300 min-h-screen">
+
+    <!-- Navbar -->
+    <div class="bg-gradient-to-r from-amber-900 to-amber-700 shadow-md p-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <img src="http://localhost/new%20proj/open%20library/frontend/logo1.png" alt="Adhyay Logo"
+                    class="h-12 w-12 rounded-full border-2 border-yellow-400 object-cover" />
+                <h1 class="text-xl font-bold text-amber-600">Adhyay</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span id="userGreeting" class="text-lg text-gray-800 font-medium"></span>
+                <button onclick="logout()"
+                    class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition duration-200">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reading List Container -->
+    <div class="max-w-7xl mx-auto p-6 mt-8 bg-white rounded-2xl shadow-xl animate-fade-in">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Your Reading List</h2>
+
+        <div id="readlistContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Cards will be populated here -->
+        </div>
+
+        <p id="emptyMessage" class="text-center text-gray-500 mt-8 hidden">No books in your reading list.</p>
+    </div>
+<!-- Updated Footer with Matching Header Colors -->
+<footer class="bg-gradient-to-r from-amber-900 to-amber-600 mt-16 text-white">
+    <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
+        <div>
+            <h4 class="font-bold text-yellow-400 mb-2">About Adhyay</h4>
+            <p>Adhyay is a community of book lovers. Discover, discuss, and dive into great reads together.</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-yellow-400 mb-2">Quick Links</h4>
+            <ul class="space-y-1">
+                <li><a href="index.html" class="hover:underline">Home</a></li>
+                <li><a href="club.html" class="hover:underline">Book Club</a></li>
+                <li><a href="readlist.html" class="hover:underline">Your Readlist</a></li>
+                <li><a href="login.html" class="hover:underline">Login / Register</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-yellow-400 mb-2">Follow Us</h4>
+            <div class="flex justify-center sm:justify-start gap-4 text-lg">
+                <a href="https://github.com/awanishkrai" target="_blank" class="hover:text-yellow-300">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="hover:text-blue-600">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="hover:text-indigo-600">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="text-center py-4 border-t mt-6 text-gray-200">
+        &copy; 2025 <a href="https://github.com/awanishkrai" class="hover:underline">awanishkrai</a>. All rights
+        reserved.
+    </div>
+</footer>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        const username = user?.username;
+        if (!username) {
+            alert("Please login first.");
+            window.location.href = "login.html";
+        }
+
+        document.getElementById("userGreeting").textContent = `Hi, ${username}`;
+
+        function logout() {
+            localStorage.removeItem("user");
+            window.location.href = "login.html";
+        }
+
+        function fetchReadlist() {
+            fetch(`http://localhost/new%20proj/open%20library/backend/api/readlist.php?username=${username}`)
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById("readlistContainer");
+                    container.innerHTML = "";
+                    if (!data.readlist || data.readlist.length === 0) {
+                        document.getElementById("emptyMessage").classList.remove("hidden");
+                        return;
+                    }
+
+                    data.readlist.forEach(item => {
+                        const card = document.createElement("div");
+                        card.className =
+                            "bg-yellow-50 p-4 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1";
+                        card.innerHTML = `
+                            <img src="http://localhost/new%20proj/open%20library/${item.image_path}" 
+                                alt="${item.title}" 
+                                class="w-full h-48 object-cover rounded-lg mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">${item.title}</h3>
+                            <p class="text-sm text-gray-700"><strong>Author:</strong> ${item.author}</p>
+                            <p class="text-sm text-gray-700"><strong>Status:</strong> ${item.status}</p>
+                            <p class="text-sm text-gray-600 mt-1">${item.notes || "No notes available."}</p>
+                            <a href="http://localhost/new%20proj/open%20library/${item.pdf_path}" 
+                               target="_blank" 
+                               class="inline-block mt-3 text-amber-600 font-semibold hover:underline text-sm">
+                               Read PDF
+                            </a>
+                            <button onclick="removeFromReadlist(${item.readlist_id})"
+                                class="block mt-2 text-red-600 hover:underline text-sm">Remove</button>
+                        `;
+                        container.appendChild(card);
+                    });
+                })
+                .catch(err => {
+                    console.error("Failed to load readlist", err);
+                });
+        }
+        // Internal Tracking Function - DO NOT REMOVE
+            // This function helps identify code ownership for anti-piracy and duplication checks.
+            function _internalMarker_2025_awanishkrai() {
+                return {
+                    owner: "awanishkrai",
+                    project: "© 2025 awanishkrai",
+                    github: "https://github.com/awanishkrai",
+                    note: "Unauthorized use of this code is strictly prohibited."
+                };
+            }
+
+
+        function removeFromReadlist(readlist_id) {
+            if (!confirm("Are you sure you want to remove this book?")) return;
+
+            fetch("http://localhost/new%20proj/open%20library/backend/api/readlist.php", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ readlist_id })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        fetchReadlist();
+                    } else {
+                        alert("Failed to delete: " + (data.error || "Unknown error."));
+                    }
+                })
+                .catch(err => {
+                    console.error("Error deleting item", err);
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchReadlist);
+    </script>
+</body>
+
+</html>
